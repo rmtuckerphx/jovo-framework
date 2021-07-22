@@ -5,6 +5,8 @@ const { JovoDebugger } = require('jovo-plugin-debugger');
 const { FileDb } = require('jovo-db-filedb');
 const app = new App();
 
+const apiService = require('./apiService');
+
 app.use(
     new GoogleAssistant(),
     new Alexa(),
@@ -55,6 +57,19 @@ app.setHandler({
             this.tell('Hello sir!')
         }
     },
+
+    TestIntent() {
+        console.log('Step 3');
+        this.toIntent('ProcessTest');
+    },
+
+    async ProcessTest() {
+        console.log('Step 4');
+        const list = await apiService.getData();
+
+        console.log('Step 7');
+        this.tell(`test ${list[0].prescriptionName}`);
+    }
 
 });
 module.exports.app = app;

@@ -1,14 +1,38 @@
 'use strict';
 const { App, Util } = require('jovo-framework');
-const { GoogleAssistant } = require('jovo-platform-googleassistant');
+// const { GoogleAssistant } = require('jovo-platform-googleassistant');
 const { Alexa } = require('jovo-platform-alexa');
 // jest.setTimeout(500);
 
 
-for (const p of [new Alexa(), new GoogleAssistant()]) {
+for (const p of [new Alexa()]) {
     const testSuite = p.makeTestSuite();
 
     describe(`PLATFORM: ${p.constructor.name} INTENTS` , () => {
+
+        test('should call API and return a message for "TestIntent"', async () => {
+            const conversation = testSuite.conversation({
+                runtime: "app"
+            });
+
+            console.log('Step 1');
+            const intentRequest = await testSuite.requestBuilder.intent();
+
+            intentRequest.setIntentName('TestIntent');
+            intentRequest.setNewSession(true);
+
+            console.log('Step 2');
+            const responseIntentRequest = await conversation.send(intentRequest);
+
+            console.log('Step 8');
+            expect(responseIntentRequest.response.outputSpeech.ssml).toBe('test BROMOCRIPTINE MESYLATE 5MG CAP');
+            // expect(
+            //     responseIntentRequest.isTell('test BROMOCRIPTINE MESYLATE 5MG CAP')
+            // ).toBe(true);
+            await conversation.clearDb();
+
+        });
+
         test('should return a welcome message and ask for the name at "LAUNCH"', async () => {
             const conversation = testSuite.conversation({
                 runtime: "app"
