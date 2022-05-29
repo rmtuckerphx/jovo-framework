@@ -1,5 +1,5 @@
 {
-  "name": "@jovotech/tts-pollu",
+  "name": "@jovotech/tts-polly",
   "version": "4.2.15",
   "description": "Polly TTS Integration",
   "main": "dist/cjs/index.js",
