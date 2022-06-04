@@ -69,6 +69,7 @@ export * from './Platform';
 export * from './Plugin';
 export * from './Server';
 export * from './RequestBuilder';
+export * from './ResponseItem';
 
 export * from './audio/AudioUtilities';
 export * from './audio/ParsedAudioInput';

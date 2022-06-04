@@ -5,6 +5,7 @@ import {
   Platform,
   PlatformConfig,
   registerPlatformSpecificJovoReference,
+  ResponseItem,
 } from '@jovotech/framework';
 import { Core } from './Core';
 import { CoreDevice } from './CoreDevice';
@@ -139,5 +140,14 @@ export class CorePlatform<PLATFORM extends string = 'core' | string> extends Pla
       state: corePlatformApp.$session.state,
     };
     return response;
+  }
+
+  getResponseItems(response: CoreResponse): ResponseItem[] {
+    const templates = this.outputTemplateConverterStrategy.fromResponse(response);
+    const items = Object.values(templates).map(t => {
+      return (t as unknown) as ResponseItem;
+    })
+
+    return items;
   }
 }

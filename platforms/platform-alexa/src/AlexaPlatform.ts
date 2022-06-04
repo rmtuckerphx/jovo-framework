@@ -5,6 +5,7 @@ import {
   Platform,
   PlatformConfig,
   RequiredOnlyWhere,
+  ResponseItem,
 } from '@jovotech/framework';
 import { Alexa } from './Alexa';
 import { AlexaDevice } from './AlexaDevice';
@@ -92,4 +93,9 @@ export class AlexaPlatform extends Platform<
     );
     this.outputTemplateConverterStrategy.config.aplTemplates = this.config.output?.aplTemplates;
   }
+
+  getResponseItems(response: AlexaResponse): ResponseItem[] {
+    return [(response.response as unknown) as ResponseItem];
+  }
+
 }

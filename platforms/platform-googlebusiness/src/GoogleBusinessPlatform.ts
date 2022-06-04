@@ -7,6 +7,7 @@ import {
   Platform,
   PlatformConfig,
   StoredElementSession,
+  ResponseItem,
 } from '@jovotech/framework';
 import { JWT, JWTInput } from 'google-auth-library';
 import { v4 as uuidV4 } from 'uuid';
@@ -106,6 +107,11 @@ export class GoogleBusinessPlatform extends Platform<
       response.messageId = uuidV4();
     }
     return response;
+  }
+
+  getResponseItems(response: GoogleBusinessResponse): ResponseItem[] {
+    // TODO: implement
+    return [];
   }
 
   private async handlePotentialDuplicateMessage(jovo: Jovo) {

@@ -1,4 +1,4 @@
-import { IsBoolean, IsObject, IsOptional, Type, ValidateNested } from '@jovotech/output';
+import { IsBoolean, IsObject, IsOptional, MessageValue, SpeechMessage, TextMessage, Type, ValidateNested } from '@jovotech/output';
 import { IsValidDirectivesArray } from '../decorators/validation/IsValidDirectivesArray';
 import { AplExecuteCommandsDirective } from './apl/AplExecuteCommandsDirective';
 import { AplLoadIndexListDataDirective } from './apl/AplLoadIndexListDataDirective';
@@ -11,7 +11,7 @@ import { AudioPlayerClearQueueDirective } from './audio-player/AudioPlayerClearQ
 import { AudioPlayerPlayDirective } from './audio-player/AudioPlayerPlayDirective';
 import { AudioPlayerStopDirective } from './audio-player/AudioPlayerStopDirective';
 import { Card } from './card/Card';
-import { OutputSpeech } from './common/OutputSpeech';
+import { OutputSpeech, OutputSpeechType } from './common/OutputSpeech';
 import { DialogConfirmIntentDirective } from './dialog/DialogConfirmIntentDirective';
 import { DialogConfirmSlotDirective } from './dialog/DialogConfirmSlotDirective';
 import { DialogDelegateDirective } from './dialog/DialogDelegateDirective';
@@ -24,8 +24,9 @@ import { HtmlHandleMessageDirective } from './html/HtmlHandleMessageDirective';
 import { HtmlStartDirective } from './html/HtmlStartDirective';
 import { Reprompt } from './Reprompt';
 import { VideoAppLaunchDirective } from './video-app/VideoAppLaunchDirective';
+import { ResponseItem } from '@jovotech/framework';
 
-export class Response {
+export class Response implements ResponseItem {
   [key: string]: unknown;
 
   @IsOptional()
@@ -85,4 +86,30 @@ export class Response {
     },
   })
   directives?: Directive[];
+
+  getSpeech?(): string {
+    let speech: string = '';
+
+    const message = this.outputSpeech?.toMessage;
+
+    if (typeof message === 'string') {
+      speech = message;
+    }
+
+    if (message instanceof SpeechMessage) {
+      speech = message.speech;
+    }
+
+    if (message instanceof TextMessage) {
+      speech = message.text;
+    }
+
+    return speech;
+  }
+
+  setSpeech?(value: string) {
+    this.type = OutputSpeechType.Ssml;
+    this.ssml = value;
+    this.text = undefined;
+  }
 }

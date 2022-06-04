@@ -1,4 +1,4 @@
-import { ExtensibleConfig, Platform, PlatformConfig } from '..';
+import { ExtensibleConfig, Platform, PlatformConfig, ResponseItem } from '..';
 import { TestDevice } from './TestDevice';
 import { TestJovo } from './TestJovo';
 import { TestOutputConverterStrategy } from './TestOutputConverterStrategy';
@@ -38,5 +38,9 @@ export class TestPlatform extends Platform<
 
   getDefaultConfig(): ExtensibleConfig {
     return {};
+  }
+
+  getResponseItems(response: TestResponse): ResponseItem[] {
+    return [];
   }
 }

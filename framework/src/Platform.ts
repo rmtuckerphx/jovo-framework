@@ -18,6 +18,7 @@ import {
   JovoUser,
   RequestBuilder,
   StoredElementSession,
+  ResponseItem,
 } from '.';
 
 import { Extensible, ExtensibleConfig } from './Extensible';
@@ -53,6 +54,8 @@ export abstract class Platform<
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   abstract outputTemplateConverterStrategy: OutputTemplateConverterStrategy<RESPONSE, any>;
+
+  abstract getResponseItems(response: RESPONSE): ResponseItem[]
 
   abstract isRequestRelated(request: REQUEST | AnyObject): boolean;
 

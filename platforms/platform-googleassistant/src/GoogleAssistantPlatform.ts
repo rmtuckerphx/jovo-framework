@@ -1,4 +1,4 @@
-import { AnyObject, App, Jovo, Platform, PlatformConfig } from '@jovotech/framework';
+import { AnyObject, App, Jovo, Platform, PlatformConfig, ResponseItem } from '@jovotech/framework';
 import _mergeWith from 'lodash.mergewith';
 import { v4 as uuidV4 } from 'uuid';
 import { GoogleAssistant } from './GoogleAssistant';
@@ -110,5 +110,10 @@ export class GoogleAssistantPlatform extends Platform<
       jovo.$input.intent = request.session.params._GOOGLE_ASSISTANT_SELECTION_INTENT_;
       delete request.session.params._GOOGLE_ASSISTANT_SELECTION_INTENT_;
     }
+  }
+
+  getResponseItems(response: GoogleAssistantResponse): ResponseItem[] {
+    // TODO: implement
+    return [];
   }
 }

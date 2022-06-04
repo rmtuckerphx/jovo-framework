@@ -13,6 +13,7 @@ import {
   Server,
   StoredElementSession,
   UnknownObject,
+  ResponseItem,
 } from '@jovotech/framework';
 import _cloneDeep from 'lodash.clonedeep';
 import {
@@ -162,6 +163,11 @@ export class FacebookMessengerPlatform extends Platform<
       response.recipient.id = senderId;
     }
     return response;
+  }
+
+  getResponseItems(response: FacebookMessengerResponse): ResponseItem[] {
+    // TODO: implement
+    return [];
   }
 
   augmentAppHandle(): void {
