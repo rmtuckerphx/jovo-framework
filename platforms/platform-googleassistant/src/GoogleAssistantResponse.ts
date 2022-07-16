@@ -1,4 +1,4 @@
-import { IsOptional, JovoResponse, Type, ValidateNested } from '@jovotech/output';
+import { JovoResponse, IsOptional, Type, ValidateNested } from '@jovotech/output';
 import { Device, Expected, Home, Prompt, Scene, Session, User } from './output';
 
 export class GoogleAssistantResponse extends JovoResponse {

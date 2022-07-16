@@ -1,12 +1,4 @@
-import {
-  IsNotEmpty,
-  IsObject,
-  IsOptional,
-  IsString,
-  JovoResponse,
-  Type,
-  ValidateNested,
-} from '@jovotech/output';
+import { IsString, IsNotEmpty, IsOptional, IsObject, ValidateNested, Type, JovoResponse } from '@jovotech/output';
 import { convertMessageToOutputSpeech, Response } from './output';
 
 export class AlexaResponse extends JovoResponse {

@@ -1,14 +1,5 @@
-import { EnumLike } from '@jovotech/framework';
-import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsObject,
-  IsOptional,
-  IsString,
-  Type,
-  ValidateNested,
-} from '@jovotech/output';
+import { EnumLike } from "@jovotech/cli-core";
+import { IsString, IsNotEmpty, IsOptional, IsArray, IsEnum, IsObject, ValidateNested, Type } from "@jovotech/output";
 
 export enum Capability {
   Unspecified = 'UNSPECIFIED',

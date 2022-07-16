@@ -1,13 +1,4 @@
-import {
-  IsArray,
-  IsNotEmpty,
-  IsString,
-  JovoResponse,
-  NormalizedOutputTemplate,
-  SpeechMessage,
-  Type,
-  ValidateNested,
-} from '@jovotech/output';
+import { JovoResponse, IsString, IsNotEmpty, IsArray, ValidateNested, Type, NormalizedOutputTemplate, SpeechMessage } from '@jovotech/output';
 import { CoreResponseContext } from '.';
 
 export class CoreResponse extends JovoResponse {

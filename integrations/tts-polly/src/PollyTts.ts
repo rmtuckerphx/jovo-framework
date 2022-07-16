@@ -5,12 +5,12 @@ import {
 } from '@aws-sdk/client-polly';
 import type { Credentials } from '@aws-sdk/types';
 
-import { Jovo, DeepPartial } from '@jovotech/framework';
-import { TtsData } from './TtsData';
-import { TtsPlugin, TtsPluginConfig } from './TtsPlugin';
+// import { TtsData } from '@jovotech/common';
+// import { Jovo, DeepPartial, TtsPlugin, TtsPluginConfig } from '@jovotech/framework';
 
 import { Readable } from 'stream';
 import * as streams from 'memory-streams';
+import { TtsPluginConfig, DeepPartial, TtsPlugin, Jovo, TtsData } from '@jovotech/framework';
 
 export interface PollyTtsConfig extends TtsPluginConfig {
   credentials: Credentials;

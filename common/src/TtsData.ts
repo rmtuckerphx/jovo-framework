@@ -1,3 +1,5 @@
+import { UnknownObject } from '.';
+
 export interface TtsData {
   text?: string;
   key?: string;
