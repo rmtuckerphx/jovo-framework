@@ -10,12 +10,13 @@ import {
 } from '@aws-sdk/client-s3';
 import type { Credentials } from '@aws-sdk/types';
 
+// TODO: Import of TtsData from common not working. Fix.
 // import { TtsData } from '@jovotech/common';
-import { JovoError } from '@jovotech/common';
+import { DeepPartial } from '@jovotech/common';
 
 import { Readable } from 'stream';
 import * as streams from 'memory-streams';
-import { DeepPartial, TtsCachePlugin, TtsCachePluginConfig, TtsData } from '@jovotech/framework';
+import { TtsCachePlugin, TtsCachePluginConfig } from '@jovotech/framework';
 
 export interface S3TtsCacheConfig extends TtsCachePluginConfig {
   credentials: Credentials;
@@ -54,7 +55,9 @@ export class S3TtsCache extends TtsCachePlugin<S3TtsCacheConfig> {
     };
   }
 
-  async getItem(key: string, locale: string, outputFormat: string): Promise<TtsData | undefined> {
+  // TODO: Import of TtsData from common not working. Fix.
+  // async getItem(key: string, locale: string, outputFormat: string): Promise<TtsData | undefined> {
+  async getItem(key: string, locale: string, outputFormat: string): Promise<any | undefined> {
     let command: HeadObjectCommand | GetObjectCommand;
     const filePath = this.getFilePath(key, locale, outputFormat);
 
@@ -69,10 +72,10 @@ export class S3TtsCache extends TtsCachePlugin<S3TtsCacheConfig> {
 
       const body = (response as GetObjectCommandOutput).Body;
       if (body) {
-        const result: TtsData = {
+        const result: any = {
           contentType: response.ContentType,
           url: urlJoin(this.config.baseUrl, filePath),
-          encodedAudio: await getBase64Audio(body),
+          encodedAudio: await getBase64Audio(body as Readable),
         };
 
         // result.encodedAudio = await getBase64Audio(body);
@@ -87,7 +90,7 @@ export class S3TtsCache extends TtsCachePlugin<S3TtsCacheConfig> {
         };
       }
     } catch (error) {
-      throw new JovoError({ message: (error as Error).message });
+      console.log((error as Error).message);
     }
 
     // object couldn't be retrieved from cache
@@ -114,7 +117,9 @@ export class S3TtsCache extends TtsCachePlugin<S3TtsCacheConfig> {
     return command;
   }
 
-  async storeItem(key: string, locale: string, data: TtsData): Promise<void> {
+  // TODO: Import of TtsData from common not working. Fix.
+  // async storeItem(key: string, locale: string, data: TtsData): Promise<void> {
+  async storeItem(key: string, locale: string, data: any): Promise<void> {
     if (!data.encodedAudio) {
       return;
     }
@@ -135,7 +140,7 @@ export class S3TtsCache extends TtsCachePlugin<S3TtsCacheConfig> {
     try {
       await this.client.send(command);
     } catch (error) {
-      throw new JovoError({ message: (error as Error).message });
+      console.log((error as Error).message);
     }
   }
 
@@ -152,6 +157,7 @@ function urlJoin(...parts: string[]): string {
   return result;
 }
 
+// TODO: duplicate method also found in PollyTts.ts. Looking for a single place to put it.
 function getBase64Audio(reader: Readable): Promise<string | undefined> {
   return new Promise((resolve, reject) => {
     const writer = new streams.WritableStream();

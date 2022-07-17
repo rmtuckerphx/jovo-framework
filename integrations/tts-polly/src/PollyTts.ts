@@ -5,12 +5,12 @@ import {
 } from '@aws-sdk/client-polly';
 import type { Credentials } from '@aws-sdk/types';
 
+// TODO: Import of TtsData from common not working. Fix.
 // import { TtsData } from '@jovotech/common';
 
 import { Readable } from 'stream';
 import * as streams from 'memory-streams';
-import { TtsPluginConfig, DeepPartial, TtsPlugin, Jovo, TtsData } from '@jovotech/framework';
-import { JovoError } from '@jovotech/common';
+import { TtsPluginConfig, DeepPartial, TtsPlugin, Jovo } from '@jovotech/framework';
 
 export interface PollyTtsConfig extends TtsPluginConfig {
   credentials: Credentials;
@@ -75,7 +75,9 @@ export class PollyTts extends TtsPlugin<PollyTtsConfig> {
     return `polly-${this.config.voiceId.toLowerCase()}`;
   }
 
-  async processTts(jovo: Jovo, text: string, textType: string): Promise<TtsData | undefined> {
+  // TODO: Import of TtsData from common not working. Fix.
+  // async processTts(jovo: Jovo, text: string, textType: string): Promise<TtsData | undefined> {
+  async processTts(jovo: Jovo, text: string, textType: string): Promise<any | undefined> {
     const params: SynthesizeSpeechCommandInput = {
       Text: text,
       TextType: textType,
@@ -96,11 +98,11 @@ export class PollyTts extends TtsPlugin<PollyTtsConfig> {
         return;
       }
 
-      const result: TtsData = {
+      const result: any = {
         contentType: response.ContentType,
         text,
         fileExtension: this.config.outputFormat,
-        encodedAudio: await getBase64Audio(response.AudioStream),
+        encodedAudio: await getBase64Audio(response.AudioStream as Readable),
       };
 
       // result.encodedAudio = await getBase64Audio(response.AudioStream);
@@ -127,12 +129,13 @@ export class PollyTts extends TtsPlugin<PollyTtsConfig> {
       //   });
       // }
     } catch (error) {
-      throw new JovoError({ message: (error as Error).message });
+      console.log((error as Error).message);      
     }
     return;
   }
 }
 
+// TODO: duplicate method also found in S3TtsCache.ts. Looking for a single place to put it.
 function getBase64Audio(reader: Readable): Promise<string | undefined> {
   return new Promise((resolve, reject) => {
     const writer = new streams.WritableStream();

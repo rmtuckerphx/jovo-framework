@@ -1,3 +1,4 @@
+// TODO: Import of TtsData from common not working. Fix.
 // import { TtsData } from '@jovotech/common';
 
 import { InvalidParentError, JovoResponse } from '..';
@@ -10,7 +11,7 @@ import { Md5 } from 'ts-md5';
 import { TtsCachePlugin } from './TtsCachePlugin';
 
 export interface TtsPluginConfig extends PluginConfig {
-  ttsCache?: TtsCachePlugin;
+  cache?: TtsCachePlugin;
   fallbackLocale: string;
 }
 
@@ -20,6 +21,7 @@ export abstract class TtsPlugin<
 > extends Plugin<CONFIG> {
   config: any;
   abstract supportedSsmlTags: string[];
+  // TODO: Import of TtsData from common not working. Fix.
   // abstract processTts(jovo: Jovo, text: string, textType: string): Promise<TtsData | undefined>;
   abstract processTts(jovo: Jovo, text: string, textType: string): Promise<any | undefined>;
   abstract getKeyPrefix?(): string | undefined;
@@ -89,6 +91,7 @@ export abstract class TtsPlugin<
     return;
   }
 
+  // TODO: Import of TtsData from common not working. Fix.
   //private async processEntry(jovo: Jovo, text: string): Promise<TtsData | undefined> {
   private async getTtsData(jovo: Jovo, text: string): Promise<any | undefined> {
     const textType = 'text';
@@ -105,8 +108,8 @@ export abstract class TtsPlugin<
     const locale = this.getLocale(jovo);
     let ttsResponse;
 
-    if (this.config.ttsCache) {
-      ttsResponse = this.config.ttsCache.getItem(audioKey, locale, this.config.outputFormat);
+    if (this.config.cache) {
+      ttsResponse = await this.config.cache.getItem(audioKey, locale, this.config.outputFormat);
       if (ttsResponse) {
         if (!ttsResponse.key) {
           ttsResponse.key = audioKey;
@@ -124,15 +127,13 @@ export abstract class TtsPlugin<
       if (ttsResponse) {
         ttsResponse.key = audioKey;
 
-        if (this.config.ttsCache) {
-          this.config.ttsCache.storeItem(audioKey, locale, ttsResponse);
-        }
-
-        return ttsResponse;
+        if (this.config.cache) {
+          await this.config.cache.storeItem(audioKey, locale, ttsResponse);
+        }        
       }
     }
 
-    return;
+    return ttsResponse;
   }
 
   private buildKey(text: string, prefix?: string): string {
