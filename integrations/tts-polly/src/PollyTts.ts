@@ -10,6 +10,7 @@ import type { Credentials } from '@aws-sdk/types';
 import { Readable } from 'stream';
 import * as streams from 'memory-streams';
 import { TtsPluginConfig, DeepPartial, TtsPlugin, Jovo, TtsData } from '@jovotech/framework';
+import { JovoError } from '@jovotech/common';
 
 export interface PollyTtsConfig extends TtsPluginConfig {
   credentials: Credentials;
@@ -66,6 +67,7 @@ export class PollyTts extends TtsPlugin<PollyTtsConfig> {
       voiceId: 'Matthew',
       sampleRate: '16000',
       engine: 'standard',
+      fallbackLocale: 'en-US',
     };
   }
 
@@ -87,32 +89,65 @@ export class PollyTts extends TtsPlugin<PollyTtsConfig> {
     };
 
     const command = new SynthesizeSpeechCommand(params);
-    const response = await this.client.send(command);
-    if (!response.AudioStream) {
-      return;
+
+    try {
+      const response = await this.client.send(command);
+      if (!response.AudioStream) {
+        return;
+      }
+
+      const result: TtsData = {
+        contentType: response.ContentType,
+        text,
+        fileExtension: this.config.outputFormat,
+        encodedAudio: await getBase64Audio(response.AudioStream),
+      };
+
+      // result.encodedAudio = await getBase64Audio(response.AudioStream);
+      return result;
+      // if (response.AudioStream instanceof Readable) {
+      //   return new Promise((resolve, reject) => {
+      //     const reader = response.AudioStream as Readable;
+      //     const writer = new streams.WritableStream();
+      //     reader.pipe(writer);
+      //     reader.on('end', () => {
+      //       const buff = writer.toBuffer();
+      //       const value = buff.toString('base64');
+      //       resolve({
+      //         contentType: response.ContentType,
+      //         encodedAudio: value,
+      //         text,
+      //         fileExtension: this.config.outputFormat,
+      //       });
+      //     });
+
+      //     reader.on('error', (e) => {
+      //       reject(e);
+      //     });
+      //   });
+      // }
+    } catch (error) {
+      throw new JovoError({ message: (error as Error).message });
     }
-
-    if (response.AudioStream instanceof Readable) {
-      return new Promise((resolve, reject) => {
-        const reader = response.AudioStream as Readable;
-        const writer = new streams.WritableStream();
-        reader.pipe(writer);
-        reader.on('end', () => {
-          const buff = writer.toBuffer();
-          const value = buff.toString('base64');
-          resolve({
-            contentType: response.ContentType,
-            encodedAudio: value,
-            text,
-          });
-        });
-
-        reader.on('error', (e) => {
-          reject(e);
-        });
-      });
-    }
-
     return;
   }
+}
+
+function getBase64Audio(reader: Readable): Promise<string | undefined> {
+  return new Promise((resolve, reject) => {
+    const writer = new streams.WritableStream();
+
+    reader.on('end', () => {
+      const buff = writer.toBuffer();
+      const value = buff.toString('base64');
+
+      resolve(value);
+    });
+
+    reader.on('error', (e) => {
+      reject(e);
+    });
+
+    reader.pipe(writer);
+  });
 }

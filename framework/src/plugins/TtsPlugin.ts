@@ -11,6 +11,7 @@ import { TtsCachePlugin } from './TtsCachePlugin';
 
 export interface TtsPluginConfig extends PluginConfig {
   ttsCache?: TtsCachePlugin;
+  fallbackLocale: string;
 }
 
 // Provide basic functionality that will then be used by all TTS plugins
@@ -38,27 +39,30 @@ export abstract class TtsPlugin<
     // if this plugin is not able to process tts, skip
     if (!this.processTts || !response) {
       return;
-    }    
-      if (response.getSpeech) {        
-        const speech = response.getSpeech();
-        const replaceList = await this.processSpeech(jovo, speech);
+    }
+    if (response.getSpeech) {
+      const speech = response.getSpeech();
+      const replaceList = await this.processSpeech(jovo, speech);
 
-        if (replaceList && response.replaceSpeech) {
-          response.replaceSpeech(replaceList);
-        }        
+      if (replaceList && response.replaceSpeech) {
+        response.replaceSpeech(replaceList);
       }
+    }
 
-      if (response.getReprompt) {        
-        const speech = response.getReprompt();
-        const replaceList = await this.processSpeech(jovo, speech);
+    if (response.getReprompt) {
+      const speech = response.getReprompt();
+      const replaceList = await this.processSpeech(jovo, speech);
 
-        if (replaceList && response.replaceReprompt) {
-          response.replaceReprompt(replaceList);
-        }        
+      if (replaceList && response.replaceReprompt) {
+        response.replaceReprompt(replaceList);
       }
+    }
   }
 
-  private async processSpeech(jovo: Jovo, speech: string | string[] | undefined): Promise<string[] | undefined> {
+  private async processSpeech(
+    jovo: Jovo,
+    speech: string | string[] | undefined,
+  ): Promise<string[] | undefined> {
     const replaceList: string[] = [];
 
     if (speech) {
@@ -70,9 +74,10 @@ export abstract class TtsPlugin<
           if (result.url) {
             replaceList.push(this.buildAudioTag(result.url));
           } else {
-            replaceList.push(this.buildAudioTag(this.buildBase64Uri(result.encodedAudio, result.contentType)));
+            replaceList.push(
+              this.buildAudioTag(this.buildBase64Uri(result.encodedAudio, result.contentType)),
+            );
           }
-          
         }
       }
     }
@@ -97,10 +102,11 @@ export abstract class TtsPlugin<
     }
     const audioKey = this.buildKey(text, prefix);
 
+    const locale = this.getLocale(jovo);
     let ttsResponse;
 
     if (this.config.ttsCache) {
-      ttsResponse = this.config.ttsCache.getItem(audioKey);
+      ttsResponse = this.config.ttsCache.getItem(audioKey, locale, this.config.outputFormat);
       if (ttsResponse) {
         if (!ttsResponse.key) {
           ttsResponse.key = audioKey;
@@ -119,7 +125,7 @@ export abstract class TtsPlugin<
         ttsResponse.key = audioKey;
 
         if (this.config.ttsCache) {
-          this.config.ttsCache.storeItem(audioKey, ttsResponse);
+          this.config.ttsCache.storeItem(audioKey, locale, ttsResponse);
         }
 
         return ttsResponse;
@@ -140,5 +146,9 @@ export abstract class TtsPlugin<
 
   private buildBase64Uri(data: string, mimeType: string): string {
     return `data:${mimeType};base64,${data}`;
+  }
+
+  private getLocale(jovo: Jovo): string {
+    return jovo.$request.getLocale() || this.config.fallbackLocale;
   }
 }
