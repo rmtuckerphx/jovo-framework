@@ -11,7 +11,7 @@ export abstract class TtsCachePlugin<
 > extends Plugin<CONFIG> {
   // TODO: Import of TtsData from common not working. Fix.
   // abstract getItem(key: string, locale: string, outputFormat: string): Promise<TtsData | undefined>;
-  // abstract storeItem(key: string, locale: string, data: TtsData): Promise<void>;
+  // abstract storeItem(key: string, locale: string, data: TtsData): Promise<string | undefined>;
   abstract getItem(key: string, locale: string, outputFormat: string): Promise<any | undefined>;
-  abstract storeItem(key: string, locale: string, data: any): Promise<void>;
+  abstract storeItem(key: string, locale: string, data: any): Promise<string | undefined>;
 }

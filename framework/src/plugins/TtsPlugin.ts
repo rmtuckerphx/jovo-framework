@@ -70,6 +70,10 @@ export abstract class TtsPlugin<
     if (speech) {
       const speechList = Array.isArray(speech) ? speech : [speech];
       for (const text of speechList) {
+        
+        // TODO: This is where the response SSML could be parsed and something
+        // done if it includes SSML tags not supported by the chosen TTS plugin.
+
         const result = await this.getTtsData(jovo, text);
 
         if (result) {
@@ -128,7 +132,10 @@ export abstract class TtsPlugin<
         ttsResponse.key = audioKey;
 
         if (this.config.cache) {
-          await this.config.cache.storeItem(audioKey, locale, ttsResponse);
+          const url = await this.config.cache.storeItem(audioKey, locale, ttsResponse);
+          if (url) {
+            ttsResponse.url = url;
+          }
         }        
       }
     }

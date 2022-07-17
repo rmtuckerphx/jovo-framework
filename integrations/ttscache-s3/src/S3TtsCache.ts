@@ -15,8 +15,7 @@ import type { Credentials } from '@aws-sdk/types';
 import { DeepPartial } from '@jovotech/common';
 
 import { Readable } from 'stream';
-import * as streams from 'memory-streams';
-import { TtsCachePlugin, TtsCachePluginConfig } from '@jovotech/framework';
+import { TtsCachePlugin, TtsCachePluginConfig, AudioUtilities } from '@jovotech/framework';
 
 export interface S3TtsCacheConfig extends TtsCachePluginConfig {
   credentials: Credentials;
@@ -75,7 +74,7 @@ export class S3TtsCache extends TtsCachePlugin<S3TtsCacheConfig> {
         const result: any = {
           contentType: response.ContentType,
           url: urlJoin(this.config.baseUrl, filePath),
-          encodedAudio: await getBase64Audio(body as Readable),
+          encodedAudio: await AudioUtilities.getBase64Audio(body as Readable),
         };
 
         // result.encodedAudio = await getBase64Audio(body);
@@ -118,8 +117,8 @@ export class S3TtsCache extends TtsCachePlugin<S3TtsCacheConfig> {
   }
 
   // TODO: Import of TtsData from common not working. Fix.
-  // async storeItem(key: string, locale: string, data: TtsData): Promise<void> {
-  async storeItem(key: string, locale: string, data: any): Promise<void> {
+  // async storeItem(key: string, locale: string, data: TtsData): Promise<string | undefined> {
+  async storeItem(key: string, locale: string, data: any): Promise<string | undefined> {
     if (!data.encodedAudio) {
       return;
     }
@@ -139,9 +138,12 @@ export class S3TtsCache extends TtsCachePlugin<S3TtsCacheConfig> {
 
     try {
       await this.client.send(command);
+      return urlJoin(this.config.baseUrl, filePath);
     } catch (error) {
       console.log((error as Error).message);
     }
+
+    return;
   }
 
   private getFilePath(key: string, locale: string, extension?: string) {
@@ -155,24 +157,4 @@ function urlJoin(...parts: string[]): string {
   let result = parts.join('/');
   result = result.replace('//', '/');
   return result;
-}
-
-// TODO: duplicate method also found in PollyTts.ts. Looking for a single place to put it.
-function getBase64Audio(reader: Readable): Promise<string | undefined> {
-  return new Promise((resolve, reject) => {
-    const writer = new streams.WritableStream();
-
-    reader.on('end', () => {
-      const buff = writer.toBuffer();
-      const value = buff.toString('base64');
-
-      resolve(value);
-    });
-
-    reader.on('error', (e) => {
-      reject(e);
-    });
-
-    reader.pipe(writer);
-  });
 }
