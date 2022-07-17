@@ -1,9 +1,7 @@
-import { UnknownObject } from '.';
-
 export interface TtsData {
-  text?: string;
+  text: string;
+  encodedAudio: string;
+  contentType?: string;
   key?: string;
   url?: string;
-  contentType?: string;
-  encodedAudio?: string;
 }

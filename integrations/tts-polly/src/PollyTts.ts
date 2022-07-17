@@ -6,7 +6,6 @@ import {
 import type { Credentials } from '@aws-sdk/types';
 
 // import { TtsData } from '@jovotech/common';
-// import { Jovo, DeepPartial, TtsPlugin, TtsPluginConfig } from '@jovotech/framework';
 
 import { Readable } from 'stream';
 import * as streams from 'memory-streams';
@@ -29,6 +28,23 @@ export type PollyTtsInitConfig = DeepPartial<PollyTtsConfig> &
 
 export class PollyTts extends TtsPlugin<PollyTtsConfig> {
   readonly client: PollyClient;
+  supportedSsmlTags: string[] = [
+    'break',
+    'emphasis',
+    'lang',
+    'mark',
+    'p',
+    'phoneme',
+    'prosody',
+    's',
+    'say-as',
+    'speak',
+    'sub',
+    'w',
+    'amazon:breath',
+    'amazon:domain',
+    'amazon:effect',
+  ];
 
   constructor(config: PollyTtsInitConfig) {
     super(config);
@@ -54,7 +70,7 @@ export class PollyTts extends TtsPlugin<PollyTtsConfig> {
   }
 
   getKeyPrefix(): string | undefined {
-    return `polly-${this.config.voiceId}`;
+    return `polly-${this.config.voiceId.toLowerCase()}`;
   }
 
   async processTts(jovo: Jovo, text: string, textType: string): Promise<TtsData | undefined> {
