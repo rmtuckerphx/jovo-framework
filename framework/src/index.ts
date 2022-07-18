@@ -107,6 +107,7 @@ export * from './plugins';
 export * from './interfaces';
 export * from './enums';
 export * from './utilities';
+export * from './SsmlUtilities';
 
 export * from './testsuite/TestJovo';
 export * from './testsuite/TestUser';

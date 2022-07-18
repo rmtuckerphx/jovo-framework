@@ -9,7 +9,7 @@ import type { Credentials } from '@aws-sdk/types';
 // import { TtsData } from '@jovotech/common';
 
 import { Readable } from 'stream';
-import { TtsPluginConfig, DeepPartial, TtsPlugin, Jovo, AudioUtilities } from '@jovotech/framework';
+import { TtsPluginConfig, DeepPartial, TtsPlugin, Jovo, AudioUtilities, TtsTextType } from '@jovotech/framework';
 
 export interface PollyTtsConfig extends TtsPluginConfig {
   credentials: Credentials;
@@ -75,8 +75,8 @@ export class PollyTts extends TtsPlugin<PollyTtsConfig> {
   }
 
   // TODO: Import of TtsData from common not working. Fix.
-  // async processTts(jovo: Jovo, text: string, textType: string): Promise<TtsData | undefined> {
-  async processTts(jovo: Jovo, text: string, textType: string): Promise<any | undefined> {
+  // async processTts(jovo: Jovo, text: string, textType: TtsTextType): Promise<TtsData | undefined> {
+  async processTts(jovo: Jovo, text: string, textType: TtsTextType): Promise<any | undefined> {
     const params: SynthesizeSpeechCommandInput = {
       Text: text,
       TextType: textType,

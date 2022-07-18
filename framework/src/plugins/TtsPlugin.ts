@@ -1,7 +1,7 @@
 // TODO: Import of TtsData from common not working. Fix.
 // import { TtsData } from '@jovotech/common';
 
-import { InvalidParentError, JovoResponse } from '..';
+import { InvalidParentError, JovoResponse, SsmlUtilities } from '..';
 import { Extensible } from '../Extensible';
 import { Jovo } from '../Jovo';
 import { Platform } from '../Platform';
@@ -9,6 +9,11 @@ import { Plugin, PluginConfig } from '../Plugin';
 
 import { Md5 } from 'ts-md5';
 import { TtsCachePlugin } from './TtsCachePlugin';
+
+export enum TtsTextType {
+  Text = 'text',
+  Ssml = 'ssml'
+}
 
 export interface TtsPluginConfig extends PluginConfig {
   cache?: TtsCachePlugin;
@@ -22,8 +27,8 @@ export abstract class TtsPlugin<
   config: any;
   abstract supportedSsmlTags: string[];
   // TODO: Import of TtsData from common not working. Fix.
-  // abstract processTts(jovo: Jovo, text: string, textType: string): Promise<TtsData | undefined>;
-  abstract processTts(jovo: Jovo, text: string, textType: string): Promise<any | undefined>;
+  // abstract processTts(jovo: Jovo, text: string, textType: TtsTextType): Promise<TtsData | undefined>;
+  abstract processTts(jovo: Jovo, text: string, textType: TtsTextType): Promise<any | undefined>;
   abstract getKeyPrefix?(): string | undefined;
 
   mount(parent: Extensible): Promise<void> | void {
@@ -98,10 +103,11 @@ export abstract class TtsPlugin<
   // TODO: Import of TtsData from common not working. Fix.
   //private async processEntry(jovo: Jovo, text: string): Promise<TtsData | undefined> {
   private async getTtsData(jovo: Jovo, text: string): Promise<any | undefined> {
-    const textType = 'text';
     if (!text) {
       return;
     }
+
+    const textType = SsmlUtilities.isPlainText(text) ? TtsTextType.Text : TtsTextType.Ssml;
 
     let prefix;
     if (this.getKeyPrefix) {

@@ -24,7 +24,8 @@
     "@jovotech/plugin-debugger": "^4.0.0",
     "@jovotech/server-express": "^4.0.0",
     "@jovotech/server-lambda": "^4.0.0",
-    "@jovotech/tts-polly": "^4.0.0"
+    "@jovotech/tts-polly": "^4.0.0",
+    "@jovotech/ttscache-s3": "^4.0.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",
