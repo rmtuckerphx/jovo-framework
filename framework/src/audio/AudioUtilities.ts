@@ -82,6 +82,7 @@ export class AudioUtilities {
     }
   }
 
+  // TODO: If there is a better way to do the audio to base64, go ahead and fix it.
   static getBase64Audio(reader: Readable): Promise<string | undefined> {
     return new Promise((resolve, reject) => {
       const writer = new streams.WritableStream();
