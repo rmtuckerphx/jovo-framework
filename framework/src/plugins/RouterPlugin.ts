@@ -95,7 +95,10 @@ export class RouterPlugin extends Plugin<RouterPluginConfig> {
             if (!globalHandlerMap[mappedIntentName]) {
               globalHandlerMap[mappedIntentName] = [];
             }
-            if (!handlerMetadata.hasCondition) {
+            if (
+              !handlerMetadata.hasCondition &&
+              !globalHandlerMap[mappedIntentName].includes(handlerMetadata)
+            ) {
               globalHandlerMap[mappedIntentName].push(handlerMetadata);
             }
           });
