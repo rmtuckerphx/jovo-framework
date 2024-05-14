@@ -91,7 +91,7 @@ export class JovoBigQuery {
       event.timeZone = this.jovo.$request.timeZone as string;
     }
 
-    if (this.config.addEventFilter && !this.config.addEventFilter(this.jovo, event)) {
+    if (this.config.addEventFilter && !(await this.config.addEventFilter(this.jovo, event))) {
       if ((this.config.logging as BigQueryLoggingConfig).addEvent) {
         // eslint-disable-next-line no-console
         console.log('BigQuery addEvent filtered', { event });
