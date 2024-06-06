@@ -1,5 +1,5 @@
 import { PluginConfig, PluginContext } from '@jovotech/cli-core';
-import { UnknownObject } from '@jovotech/framework';
+import { EnumLike, UnknownObject } from '@jovotech/framework';
 import { ConversationsTarget } from '../interfaces';
 
 import { SupportedLocales } from './constants';
@@ -115,4 +115,18 @@ export interface SkillStatusResponse {
     };
   };
   interactionModel?: UnknownObject;
+}
+
+export enum PublicationMethod {
+  MANUAL_PUBLISHING = 'MANUAL_PUBLISHING',
+  AUTO_PUBLISHING = 'AUTO_PUBLISHING',
+}
+
+export type PublicationMethodLike = EnumLike<PublicationMethod> | string;
+
+export type ValidationStatus = 'SUCCEEDED' | 'FAILED' | 'IN_PROGRESS';
+
+export interface SkillValidationResponse {
+  id: string;
+  status: ValidationStatus;
 }

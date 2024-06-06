@@ -2,6 +2,7 @@ import type { NewContext } from '@jovotech/cli-command-new';
 import {
   JovoCliPlugin,
   Log,
+  PluginCommand,
   PluginHook,
   PluginType,
   promptSupportedLocales,
@@ -15,6 +16,8 @@ import { DeployHook } from './hooks/DeployHook';
 import { GetHook } from './hooks/GetHook';
 import { NewHook } from './hooks/NewHook';
 import { AlexaCliConfig, AlexaConversationsConfig, SupportedLocalesType } from './interfaces';
+import { CertifyCommand } from './commands/CertifyCommand';
+import { ValidateCommand } from './commands/ValidateCommand';
 
 export type AlexaCliInitConfig =
   | RequiredOnlyWhere<AlexaCliConfig, 'conversations.enabled'>
@@ -103,6 +106,10 @@ export class AlexaCli extends JovoCliPlugin<AlexaCliConfig> {
 
   getHooks(): (typeof PluginHook)[] {
     return [BuildHook, GetHook, DeployHook, NewHook];
+  }
+
+  getCommands(): (typeof PluginCommand)[] {
+    return [CertifyCommand, ValidateCommand];
   }
 
   /**

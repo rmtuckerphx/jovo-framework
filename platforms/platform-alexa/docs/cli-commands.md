@@ -36,6 +36,11 @@ The Alexa CLI plugin hooks into the following commands:
 - [`deploy`](#deploy): Deploy project files to the Alexa Developer Console
 - [`get`](#get): Synchronize your local project files with the Alexa Developer Console
 
+Also it provides the following platform specific commands:
+
+- [`validate:alexa`](#validate): Trigger the Alexa Skill Validation
+- [`certify:alexa`](#certify): Trigger the Alexa Skill Certification
+
 ## build
 
 The Alexa CLI plugin hooks into the `build` command and creates a `platform.alexa` folder inside the `build` directory in the root of your Jovo project. [Learn more about the `build` command here](https://www.jovo.tech/docs/build-command).
@@ -133,3 +138,36 @@ $ jovo get:platform alexa
 # Turn Alexa Interaction Model into Jovo Model
 $ jovo build:platform alexa --reverse
 ```
+
+## validate
+
+The Alexa CLI plugin provides a command to easily trigger a Skill Validation.
+
+```sh
+$ jovo verify:alexa
+```
+
+After successfully triggering the validation, you can check the status in the [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask#/).
+
+| Flag            | Description                                                                                                                                                                                          | Examples                                                             |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | 
+| `--skill-stage` | Either `development`, `live` or `certification` depending on what skill stage is to be validated. Default is `development`                                                                           | `jovo validate:alexa --skill-stage development`             |     |     |
+| `--skill-id`    | The skillId of the to be validated skill. If not provided, will be taken from the stage in the project configuration. [Learn more about ASK skillId configuration here](./project-config.md#skillid) | `jovo validate:alexa --skill-id amzn1.ask.skill.123example` |          
+| `--ask-profile` | Deploy to using the specified ASK profile. If not provided as flag, will be taken from project configuration. [Learn more about ASK profile configuration here](./project-config.md#askprofile)      | `jovo validate:alexa --ask-profile default`                 |          
+| `--locales`     | List of locales in which to validate the skill. If not provided, will do for all locales in project configuration. [Learn more about locales configuration here](./project-config.md#locales)        | `jovo validate:alexa --locales en-US de-DE`                 |          
+
+## certify
+
+The Alexa CLI plugin provides a command to easily trigger a Skill Certification.
+
+```sh
+$ jovo certify:alexa
+```
+
+After successfully triggering the certification, you can check the status of the certification in the [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask#/).
+
+| Flag            | Description                                                                                                                                                                                          | Examples                                                             |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | 
+| `--skill-id`    | The skillId of the to be validated skill. If not provided, will be taken from the stage in the project configuration. [Learn more about ASK skillId configuration here](./project-config.md#skillid) | `jovo certify:alexa --skill-id amzn1.ask.skill.123example` |          
+| `--ask-profile` | Deploy to using the specified ASK profile. If not provided as flag, will be taken from project configuration. [Learn more about ASK profile configuration here](./project-config.md#askprofile)      | `jovo certify:alexa --ask-profile default`                 |          
+| `--publication-method`     | Either `MANUAL_PUBLISHING` or `AUTO_PUBLISHING`. Default is `MANUAL_PUBLISHING`. [Learn more about publication methods](https://developer.amazon.com/en-US/docs/alexa/smapi/ask-cli-command-reference.html#submit-skill-for-certification-subcommand) | `jovo validate:alexa --publication-method AUTO_PUBLISHING`                 |          
