@@ -1,6 +1,7 @@
 import { BaseOutput, Output, OutputOptions, OutputTemplate } from '@jovotech/framework';
 import { ConnectionPermissionScopeLike, ConsentLevelLike } from '../models';
 import { OnCompletion } from '../models/common/OnCompletion';
+import { StartConnectionOutput } from './StartConnectionOutput';
 
 export interface PermissionScopeItem {
   permissionScope: ConnectionPermissionScopeLike;
@@ -24,35 +25,18 @@ export class ConnectionAskForPermissionConsentOutput extends BaseOutput<Connecti
   }
 
   build(): OutputTemplate | OutputTemplate[] {
-    const shouldEndSession =
-      this.options.onCompletion === OnCompletion.SendErrorsOnly
-        ? true
-        : this.options.shouldEndSession;
+    return new StartConnectionOutput(this.jovo, {
+      taskName: { name: 'AskForPermissionsConsent', amazonPredefinedTask: true },
+      taskVersion: 2,
 
-    return {
-      message: this.options.message,
-      platforms: {
-        alexa: {
-          nativeResponse: {
-            response: {
-              shouldEndSession,
-              directives: [
-                {
-                  type: 'Connections.StartConnection',
-                  uri: 'connection://AMAZON.AskForPermissionsConsent/2',
-                  input: {
-                    '@type': 'AskForPermissionsConsentRequest',
-                    '@version': '2',
-                    'permissionScopes': this.options.permissionScopes,
-                  },
-                  token: this.options.token,
-                  onCompletion: this.options.onCompletion,
-                },
-              ],
-            },
-          },
-        },
+      shouldEndSession: this.options.shouldEndSession,
+      onCompletion: this.options.onCompletion,
+      input: {
+        '@type': 'AskForPermissionsConsentRequest',
+        '@version': '2',
+        'permissionScopes': this.options.permissionScopes,
       },
-    };
+      token: this.options.token,
+    }).build();
   }
 }

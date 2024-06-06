@@ -1,5 +1,6 @@
 import { BaseOutput, Output, OutputOptions, OutputTemplate } from '@jovotech/framework';
 import { OnCompletion } from '../models/common/OnCompletion';
+import { StartConnectionOutput } from './StartConnectionOutput';
 
 export enum ImageType {
   Jpg = 'JPG',
@@ -28,38 +29,20 @@ export class ConnectionPrintImageOutput extends BaseOutput<ConnectionPrintImageO
   }
 
   build(): OutputTemplate | OutputTemplate[] {
-    const shouldEndSession =
-      this.options.onCompletion === OnCompletion.SendErrorsOnly
-        ? true
-        : this.options.shouldEndSession;
-
-    return {
-      message: this.options.message,
-      platforms: {
-        alexa: {
-          nativeResponse: {
-            response: {
-              shouldEndSession,
-              directives: [
-                {
-                  type: 'Connections.StartConnection',
-                  uri: 'connection://AMAZON.PrintImage/1',
-                  input: {
-                    '@type': 'PrintImageRequest',
-                    '@version': '1',
-                    'title': this.options.title,
-                    'description': this.options.description,
-                    'url': this.options.url,
-                    'imageType': this.options.imageType,
-                  },
-                  token: this.options.token,
-                  onCompletion: this.options.onCompletion,
-                },
-              ],
-            },
-          },
-        },
+    return new StartConnectionOutput(this.jovo, {
+      taskName: { name: 'PrintImage', amazonPredefinedTask: true },
+      taskVersion: 1,
+      shouldEndSession: this.options.shouldEndSession,
+      onCompletion: this.options.onCompletion,
+      input: {
+        '@type': 'PrintImageRequest',
+        '@version': '1',
+        'title': this.options.title,
+        'description': this.options.description,
+        'url': this.options.url,
+        'imageType': this.options.imageType,
       },
-    };
+      token: this.options.token,
+    }).build();
   }
 }

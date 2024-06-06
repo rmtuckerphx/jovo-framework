@@ -1,6 +1,7 @@
 import { BaseOutput, Output, OutputOptions, OutputTemplate } from '@jovotech/framework';
 import { ConnectionPostalAddress } from '../models';
 import { OnCompletion } from '../models/common/OnCompletion';
+import { StartConnectionOutput } from './StartConnectionOutput';
 
 export interface ConnectionRestaurant {
   '@type': 'Restaurant';
@@ -40,37 +41,19 @@ export class ConnectionScheduleFoodEstablishmentReservationOutput extends BaseOu
   }
 
   build(): OutputTemplate | OutputTemplate[] {
-    const shouldEndSession =
-      this.options.onCompletion === OnCompletion.SendErrorsOnly
-        ? true
-        : this.options.shouldEndSession;
-
-    return {
-      message: this.options.message,
-      platforms: {
-        alexa: {
-          nativeResponse: {
-            response: {
-              shouldEndSession,
-              directives: [
-                {
-                  type: 'Connections.StartConnection',
-                  uri: 'connection://AMAZON.ScheduleFoodEstablishmentReservation/1',
-                  input: {
-                    '@type': 'ScheduleFoodEstablishmentReservationRequest',
-                    '@version': '1',
-                    'startTime': this.options.startTime,
-                    'partySize': this.options.partySize,
-                    'restaurant': this.options.restaurant,
-                  },
-                  token: this.options.token,
-                  onCompletion: this.options.onCompletion,
-                },
-              ],
-            },
-          },
-        },
+    return new StartConnectionOutput(this.jovo, {
+      taskName: { name: 'ScheduleFoodEstablishmentReservation', amazonPredefinedTask: true },
+      taskVersion: 1,
+      shouldEndSession: this.options.shouldEndSession,
+      onCompletion: this.options.onCompletion,
+      input: {
+        '@type': 'ScheduleFoodEstablishmentReservationRequest',
+        '@version': '1',
+        'startTime': this.options.startTime,
+        'partySize': this.options.partySize,
+        'restaurant': this.options.restaurant,
       },
-    };
+      token: this.options.token,
+    }).build();
   }
 }
