@@ -1,6 +1,7 @@
 import { BaseOutput, Output, OutputOptions, OutputTemplate } from '@jovotech/framework';
 import { AsinProduct } from '../models';
 import { OnCompletion } from '../models/common/OnCompletion';
+import { StartConnectionOutput } from './StartConnectionOutput';
 
 export interface ConnectionBuyShoppingProductsOutputOptions extends OutputOptions {
   shouldEndSession?: boolean;
@@ -19,33 +20,15 @@ export class ConnectionBuyShoppingProductsOutput extends BaseOutput<ConnectionBu
   }
 
   build(): OutputTemplate | OutputTemplate[] {
-    const shouldEndSession =
-      this.options.onCompletion === OnCompletion.SendErrorsOnly
-        ? true
-        : this.options.shouldEndSession;
-
-    return {
-      message: this.options.message,
-      platforms: {
-        alexa: {
-          nativeResponse: {
-            response: {
-              shouldEndSession,
-              directives: [
-                {
-                  type: 'Connections.StartConnection',
-                  uri: 'connection://AMAZON.BuyShoppingProducts/1',
-                  input: {
-                    products: this.options.products,
-                  },
-                  token: this.options.token,
-                  onCompletion: this.options.onCompletion,
-                },
-              ],
-            },
-          },
-        },
+    return new StartConnectionOutput(this.jovo, {
+      taskName: { name: 'BuyShoppingProducts', amazonPredefinedTask: true },
+      taskVersion: 1,
+      shouldEndSession: this.options.shouldEndSession,
+      onCompletion: this.options.onCompletion,
+      input: {
+        products: this.options.products,
       },
-    };
+      token: this.options.token,
+    }).build();
   }
 }

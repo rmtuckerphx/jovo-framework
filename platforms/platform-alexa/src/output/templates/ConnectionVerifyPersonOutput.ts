@@ -1,5 +1,6 @@
 import { BaseOutput, Output, OutputOptions, OutputTemplate } from '@jovotech/framework';
 import { OnCompletion } from '../models/common/OnCompletion';
+import { StartConnectionOutput } from './StartConnectionOutput';
 
 export enum PolicyName {
   VoicePin = 'VOICE_PIN',
@@ -24,38 +25,20 @@ export class ConnectionVerifyPersonOutput extends BaseOutput<ConnectionVerifyPer
   }
 
   build(): OutputTemplate | OutputTemplate[] {
-    const shouldEndSession =
-      this.options.onCompletion === OnCompletion.SendErrorsOnly
-        ? true
-        : this.options.shouldEndSession;
-
-    return {
-      message: this.options.message,
-      platforms: {
-        alexa: {
-          nativeResponse: {
-            response: {
-              shouldEndSession,
-              directives: [
-                {
-                  type: 'Connections.StartConnection',
-                  uri: 'connection://AMAZON.VerifyPerson/2',
-                  input: {
-                    requestedAuthenticationConfidenceLevel: {
-                      level: this.options.level,
-                      customPolicy: {
-                        policyName: this.options.policyName,
-                      },
-                    },
-                  },
-                  token: this.options.token,
-                  onCompletion: this.options.onCompletion,
-                },
-              ],
-            },
+    return new StartConnectionOutput(this.jovo, {
+      taskName: { name: 'VerifyPerson', amazonPredefinedTask: true },
+      taskVersion: 2,
+      shouldEndSession: this.options.shouldEndSession,
+      onCompletion: this.options.onCompletion,
+      input: {
+        requestedAuthenticationConfidenceLevel: {
+          level: this.options.level,
+          customPolicy: {
+            policyName: this.options.policyName,
           },
         },
       },
-    };
+      token: this.options.token,
+    }).build();
   }
 }

@@ -572,7 +572,41 @@ You can build Alexa Skills with Jovo that make use of the Alexa Conversations di
 
 You can use Jovo with [Alexa Skill Connections](https://developer.amazon.com/docs/alexa/custom-skills/understand-skill-connections.html) by sending a `Connections.StartConnection` directive as shown in the [official Alexa docs](https://developer.amazon.com/docs/alexa/custom-skills/use-skill-connections-to-request-tasks.html#implement-a-handler-to-return-a-connectionsstartconnection-directive-to-use-skill-connection).
 
-For this, the Jovo Alexa integration offers convenience [output classes](https://www.jovo.tech/docs/output-classes). Below is an overview of all classes:
+For example, if you want to connect to a [custom task in a specific skill](https://developer.amazon.com/en-US/docs/alexa/custom-skills/use-skill-connections-to-request-tasks.html#for-custom-task-direct-skill-connection-with-send_errors_only), you can use the `StartConnectionOutput` class provided by the Jovo Alexa integration.
+
+```typescript
+import { StartConnectionOutput, OnCompletion } from '@jovotech/platform-alexa';
+// ...
+
+someHandler() {
+  // ...
+
+  return this.$send(StartConnectionOutput, {
+    taskName: {
+      amazonPredefinedTask: false,
+      name: 'CountDown',
+    },
+    // Input for the task
+    input: {
+      upperLimit: 10,
+      lowerLimit: 1,
+    },
+    // Decides whether session is picked up after task
+    onCompletion: OnCompletion.SendErrorsOnly,
+    token: '<your-token>',
+    // defaults to 1
+    taskVersion: 1,
+    // This is mandatory in case taskName.amazonPredefinedTask is false
+    providerSkillId: '<skill-id>',
+  });
+}
+```
+
+The Output Options can be changed to create a [managed skill connection](https://developer.amazon.com/en-US/docs/alexa/custom-skills/use-skill-connections-to-request-tasks.html#for-managed-skill-connection), by setting `taskName.amazonPredefinedTask` to true and omitting `providerSkillId`.
+
+In case the session is supposed to be [resumed](https://developer.amazon.com/en-US/docs/alexa/custom-skills/use-skill-connections-to-request-tasks.html#return-connectionsstartconnection-directive-with-resume_session-set-explicitly-or-by-default) after the task is handled, `onCompletion` can be changed to `OnCompletion.ResumeSession`.
+
+For some specific connections, the Jovo Alexa integration offers convenience [output classes](https://www.jovo.tech/docs/output-classes). Below is an overview of all classes:
 
 - [`ConnectionAskForPermissionConsentOutput`](https://github.com/jovotech/jovo-framework/tree/v4/latest/platforms/platform-alexa/src/output/templates/ConnectionAskForPermissionConsentOutput.ts)
 - [`ConnectionLinkAppOutput`](https://github.com/jovotech/jovo-framework/tree/v4/latest/platforms/platform-alexa/src/output/templates/ConnectionLinkAppOutput.ts)   

@@ -57,6 +57,7 @@ export * from './common/AsinProduct';
 export * from './common/ConnectionPostalAddress';
 export * from './common/ConsentLevel';
 export * from './common/PermissionScope';
+export * from './common/OnCompletion';
 export * from './dialog/DialogConfirmIntentDirective';
 export * from './dialog/DialogConfirmSlotDirective';
 export * from './dialog/DialogDelegateDirective';
